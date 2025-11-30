@@ -1,6 +1,10 @@
 /**
  * SPDX-License-Identifier: Apache-2.0
  * Copyright (c) Bao Project and Contributors. All rights reserved.
+ * 
+ * @file remio.c
+ * @brief This source file contains the cache configuration implementation
+ * 
  */
 
 #include <cache.h>
@@ -10,6 +14,19 @@ static struct cache cache_dscr;
 size_t COLOR_NUM = 1;
 size_t COLOR_SIZE = 1;
 
+/**
+ * @brief Calculate cache coloring parameters based on cache hierarchy
+ *
+ * Analyzes the populated cache description to determine the number and size of 
+ * cache colors based on LLC (Last Level Cache) and FLC (First Level Cache) 
+ * characteristics.
+ * Only calculates colors for unified caches with PIPT indexing.
+ *
+ * @param dscrp Pointer to cache description structure
+ * @param page_size Size of memory pages in bytes
+ *
+ * @see COLOR_NUM, COLOR_SIZE, cache
+ */
 static void cache_calc_colors(struct cache* dscrp, size_t page_size)
 {
     if (dscrp->lvls == 0) {
@@ -42,6 +59,14 @@ static void cache_calc_colors(struct cache* dscrp, size_t page_size)
     COLOR_NUM = llc_num_colors / COLOR_SIZE;
 }
 
+/**
+ * @brief Populate cache system-specific definition and cache coloring parameters 
+ *
+ * Populates cache description and sets the cache coloring parameters
+ * according to the architecture's configuration.
+ *
+ * @see cache_arch_enumerate(), cache_calc_colors(), cache_dscr, PAGE_SIZE.
+ */
 void cache_enumerate(void)
 {
     cache_arch_enumerate(&cache_dscr);
